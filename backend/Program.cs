@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+using Telegram.Bot.Types;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
