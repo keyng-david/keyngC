@@ -1,10 +1,11 @@
-using Newtonsoft.Json;
-using Telegram.Bot.Types;
 using System.Text;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+
 using Telegram.Bot;
+
 using Presentation.Common;
 using Presentation.Telegram;
 using Presentation.Common.Domain.Contexts;
