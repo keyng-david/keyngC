@@ -8,6 +8,7 @@
 </template>
 
 <script setup lang="ts">
+
 import type NotificationModel from '@/models/notificationModel';
 import Notification from '@/components/notification/Notificaton.vue';
 import { RouterView, RouterLink, useRouter, useRoute } from "vue-router";
