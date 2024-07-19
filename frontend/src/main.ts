@@ -29,5 +29,5 @@ app.config.globalProperties.$filters = {
         return BASE_URL + link;
     },
 }
-
+app.use(filters); // Use the plugin
 app.mount('#app')
