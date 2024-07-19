@@ -1,0 +1,1 @@
+import{d as t,o as s,c as n,n as a,_ as r}from"./index-JH8eRqt0.js";const c=t({__name:"SkeletonLoader",props:{width:{},height:{}},setup(o){const e=o;return(d,l)=>(s(),n("div",{style:a(`width:${e.width};height:${e.height};`),class:"box-shadow skeleton rounded-1"},null,4))}}),i=r(c,[["__scopeId","data-v-584ba58d"]]);export{i as S};
