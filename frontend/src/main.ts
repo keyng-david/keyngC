@@ -3,7 +3,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import { BASE_URL } from './configurations/HttpConfiguration'
-
+import filters from './plugins/filters'; // Import the plugin
 const app = createApp(App)
 
 app.use(router)
