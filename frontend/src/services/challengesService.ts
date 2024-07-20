@@ -2,6 +2,7 @@ import { HttpService } from "./common/httpService";
 import { BASE_URL } from "@/configurations/HttpConfiguration";
 import type ChallengeModel from "@/models/challengeModel";
 import type TaskModel from "@/models/taskModel";
+import type UserModel from '@/models/userModel';
 
 export interface CompletTaskResponse {
     path: string;
