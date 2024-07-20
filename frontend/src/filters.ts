@@ -5,7 +5,7 @@ export function numberFormat(value) {
 }
 
 export function serverLinkFormat(url) {
-    return `https://your-server-url/${url}`;
+    return `https://keyng-0b9a17ac7e90.herokuapp.com/${url}`;
 }
 
 export function truncate(text, length) {
