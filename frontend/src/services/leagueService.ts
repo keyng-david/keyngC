@@ -22,7 +22,7 @@ export default class LeagueService extends HttpService {
         const response = await this.get(`/list`);
 
         if (response.isOk()) {
-            const leagues: Array<LeagueModel> = response.value.result;
+            const leagues: Array<LeagueModel> = (response.value as any).result;
 
             localStorage.setItem('leagues', JSON.stringify(leagues));
 
@@ -34,7 +34,7 @@ export default class LeagueService extends HttpService {
         const response = await this.get(`/squads/${id}/?query=${query}&size=${size}&page=${page}`);
 
         if (response.isOk()) {
-            return response.value.result as Array<SquadModel>;
+            return (response.value as any).result as Array<SquadModel>;
         }
         throw response.error;
     }
@@ -43,7 +43,7 @@ export default class LeagueService extends HttpService {
         const response = await this.get(`/members/${id}/?query=${query}&size=${size}&page=${page}`);
 
         if (response.isOk()) {
-            return response.value.result as Array<UserModel>;
+            return (response.value as any).result as Array<UserModel>;
         }
         throw response.error;
     }
