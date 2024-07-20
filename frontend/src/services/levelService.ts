@@ -19,7 +19,7 @@ export default class LevelService extends HttpService {
         const response = await this.get(`/levels`);
 
         if (response.isOk()) {
-            const levels: Array<LevelModel> = response.value.result;
+            const levels: Array<LevelModel> = (response.value as any).result;
 
             localStorage.setItem('levels', JSON.stringify(levels));
 
@@ -31,7 +31,7 @@ export default class LevelService extends HttpService {
         const response = await this.post(`/levelUp/${levelType.toString()}`);
 
         if (response.isOk()) {
-            const user: UserModel = response.value.result;
+            const user: UserModel = (response.value as any).result;
 
             localStorage.setItem('user', JSON.stringify(user));
 
