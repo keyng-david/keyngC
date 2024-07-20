@@ -17,18 +17,18 @@ export default class ChallengeService extends HttpService {
     public async completTask(id: string): Promise<CompletTaskResponse> {
         const response = await this.post(`/completTask/` + id);
         if (response.isOk()) {
-            return response.value.result as CompletTaskResponse;
+            return (response.value as any).result as CompletTaskResponse;
         }
         throw response.error;
     }
     public async completChallenge(id: string): Promise<ChallengeModel> {
         const response = await this.post(`/completChallenge/` + id);
         if (response.isOk()) {
-            const userModel: UserModel = response.value.result.user;
+            const userModel: UserModel = (response.value as any).result.user;
 
             localStorage.setItem('user', JSON.stringify(userModel));
 
-            return response.value.result.challenge as ChallengeModel;
+            return (response.value as any).result.challenge as ChallengeModel;
         }
         throw response.error;
     }
@@ -36,7 +36,7 @@ export default class ChallengeService extends HttpService {
         const response = await this.get(`/list`);
 
         if (response.isOk()) {
-            return response.value.result as Array<ChallengeModel>;
+            return (response.value as any).result as Array<ChallengeModel>;
         }
         throw response.error;
     }
@@ -44,7 +44,7 @@ export default class ChallengeService extends HttpService {
         const response = await this.get(`/getTasks/` + id);
 
         if (response.isOk()) {
-            return response.value.result as Array<TaskModel>;
+            return (response.value as any).result as Array<TaskModel>;
         }
         throw response.error;
     }
