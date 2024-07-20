@@ -11,7 +11,7 @@ export default class CurrencyService extends HttpService {
         const response = await this.get(`/list`);
 
         if (response.isOk()) {
-            return response.value.result as Array<CurrencyModel>;
+            return (response.value as any).result as Array<CurrencyModel>;
         }
         throw response.error;
     }
