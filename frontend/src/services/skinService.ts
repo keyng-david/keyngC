@@ -12,7 +12,7 @@ export default class SkinService extends HttpService {
         const response = await this.get(`/list?size=${size}&page=${page}`);
 
         if (response.isOk()) {
-            return response.value.result as Array<SkinModel>;
+            (response.value as any).result as Array<SkinModel>;
         }
         throw response.error;
     }
@@ -21,7 +21,7 @@ export default class SkinService extends HttpService {
         const response = await this.post(`/set/${id}`, {});
 
         if (response.isOk()) {
-            const userModel: UserModel = response.value.result;
+            const userModel: UserModel = (response.value as any).result;
 
             localStorage.setItem('user', JSON.stringify(userModel));
 
@@ -33,7 +33,7 @@ export default class SkinService extends HttpService {
         const response = await this.post(`/buy/${id}`, {});
 
         if (response.isOk()) {
-            const userModel: UserModel = response.value.result;
+            const userModel: UserModel = (response.value as any).result;
 
             localStorage.setItem('user', JSON.stringify(userModel));
 
