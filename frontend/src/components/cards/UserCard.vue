@@ -27,9 +27,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
 import type UserModel from '@/models/userModel';
 import SkeletonLoader from '@/components/utilities/SkeletonLoader.vue';
+import { serverLinkFormat, truncate, numberFormat } from '@/filters/index';
+
 
 interface Props {
   user: UserModel | null
@@ -37,11 +38,11 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const filters = computed(() => ({
-  serverLinkFormat: props.user ? props.user.serverLinkFormat : '',
-  truncate: props.user ? props.user.truncate : '',
-  numberFormat: props.user ? props.user.numberFormat : '',
-}));
+const filters = {
+  serverLinkFormat,
+  truncate,
+  numberFormat,
+};
 </script>
 
 <style scoped>
