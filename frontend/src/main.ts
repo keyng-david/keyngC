@@ -1,21 +1,19 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
-import { BASE_URL } from './configurations/HttpConfiguration'
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import { BASE_URL } from './configurations/HttpConfiguration';
+import { numberFormat, serverLinkFormat, truncate } from './filters';
 
-// Import filter functions
-import { numberFormat, serverLinkFormat, truncate } from './filters'
+const app = createApp(App);
 
-const app = createApp(App)
+// Using router
+app.use(router);
 
-app.use(router)
-
+// Registering filters globally as a plugin
 app.config.globalProperties.$filters = {
     truncate,
     numberFormat,
-    serverLinkFormat: (link: string = "") => {
-        return BASE_URL + link;
-    }
-}
+    serverLinkFormat: (link: string = "") => `${BASE_URL}${link}`
+};
 
-app.mount('#app')
+app.mount('#app');
