@@ -1,16 +1,11 @@
-// src/filters.js
-
-export function numberFormat(value) {
-    return new Intl.NumberFormat().format(value);
+export function serverLinkFormat(link: string): string {
+  return `https://your-server.com/${link}`;
 }
 
-export function serverLinkFormat(url) {
-    return `https://keyng-0b9a17ac7e90.herokuapp.com/${url}`;
+export function truncate(text: string, length: number): string {
+  return text.length > length ? text.substring(0, length) + '...' : text;
 }
 
-export function truncate(text, length) {
-    if (text.length > length) {
-        return text.substring(0, length) + '...';
-    }
-    return text;
+export function numberFormat(number: number): string {
+  return new Intl.NumberFormat().format(number);
 }
