@@ -155,6 +155,8 @@ const swapRequest = () => {
         });
         return;
     }
+
+    // Ensure swapWallet is a string and swapCount is a number
     if (swapCount.value < 10000000) {
         createNotification({
             title: "Count Error",
@@ -178,7 +180,7 @@ const swapRequest = () => {
         type: NotificationTypeEnum.Waiting,
     });
 
-    // Call the swap service (placeholder)
+    // Call the swap service (Ensure currentCurrency and swapWallet are correctly typed)
     currencyService.swap(swapCount.value, swapWallet.value, currentCurrency.value!.id)
         .then(result => {
             user.value = result;
