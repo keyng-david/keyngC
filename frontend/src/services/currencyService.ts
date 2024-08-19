@@ -17,3 +17,20 @@ export default class CurrencyService extends HttpService {
     }
 
 }
+
+    public async swap(amount: number, wallet: string, currencyId: string): Promise<UserModel> {
+    const response = await this.post(`/swap`, {
+      amount,
+      wallet,
+      currencyId
+    });
+
+    if (response.isOk()) {
+      const userModel: UserModel = (response.value as any).result;
+      localStorage.setItem('user', JSON.stringify(userModel));
+      return userModel;
+    }
+
+    throw response.error;
+  }
+}
