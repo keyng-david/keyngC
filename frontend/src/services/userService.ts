@@ -3,10 +3,23 @@ import { BASE_URL } from "@/configurations/HttpConfiguration";
 import type PaginationModel from "@/models/paginationModel";
 import type UserModel from "@/models/userModel";
 
+interface TransferResponse {
+    result: UserModel;
+}
+
+interface ProfileResponse {
+    result: UserModel;
+}
+
+interface MembersResponse {
+    value: PaginationModel<Array<UserModel>>;
+}
+
 export default class UserService extends HttpService {
     constructor() {
         super(BASE_URL + "/user");
-    };
+    }
+
     public getUserFromStorage(): UserModel | undefined {
         const getJsonString = localStorage.getItem('user');
 
@@ -23,9 +36,10 @@ export default class UserService extends HttpService {
                 return user;
             } catch (exception) { console.log(exception) }
         }
-    };
+    }
+
     public async transfer(count: number, id: number): Promise<UserModel> {
-        const response = await this.post(`/transfer`, { userId: id, count });
+        const response = await this.post<TransferResponse>(`/transfer`, { userId: id, count });
 
         if (response.isOk()) {
             const userModel: UserModel = response.value.result;
@@ -36,13 +50,13 @@ export default class UserService extends HttpService {
         }
         throw response.error;
     }
-    public async profile(): Promise<UserModel> {
 
+    public async profile(): Promise<UserModel> {
         const getUserStorage = this.getUserFromStorage();
         console.log(getUserStorage)
         if (getUserStorage) return getUserStorage;
 
-        const response = await this.get('');
+        const response = await this.get<ProfileResponse>('');
 
         if (response.isOk()) {
             const userModel: UserModel = response.value.result;
@@ -53,14 +67,13 @@ export default class UserService extends HttpService {
         }
         throw response.error;
     }
+
     public async getMembers(query: string = "", size: number = 50, page: number = 1): Promise<PaginationModel<Array<UserModel>>> {
-        const response = await this.get(`/members?query=${query}&size=${size}&page=${page}`);
+        const response = await this.get<MembersResponse>(`/members?query=${query}&size=${size}&page=${page}`);
 
         if (response.isOk()) {
-            return response.value as PaginationModel<Array<UserModel>>;
+            return response.value;
         }
         throw response.error;
     }
-
-
 }
