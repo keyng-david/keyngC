@@ -90,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject, computed } from 'vue'
+import { ref, inject, computed } from 'vue';
 
 import UserService from '@/services/userService';
 import type UserModel from '@/models/userModel';
@@ -99,7 +99,6 @@ import { NotificationTypeEnum } from '@/models/notificationModel';
 import type CurrencyModel from '@/models/currencyModel';
 import CurrencyService from '@/services/currencyService';
 
-// Inject notification service
 const { createNotification } = inject("notification");
 
 const user = ref<UserModel>();
@@ -112,23 +111,20 @@ const transferCount = ref<number>();
 const transferUserId = ref<number>();
 const currencies = ref<Array<CurrencyModel>>(new Array<CurrencyModel>());
 
-// Instantiate services
 const userService = new UserService();
 const currencyService = new CurrencyService();
 
-// Fetch user and currency data on component mount
 const fetchRequest = () => {
     userService.profile()
-        .then(result => user.value = result)
+        .then(result => user.value = result);
     currencyService.getList()
         .then(result => {
             currencies.value = result;
             if (result.length > 0)
                 currentCurrency.value = result[0];
-        })
+        });
 };
 
-// Computed properties for filters
 const formattedBalance = computed(() => {
     return app.config.globalProperties.$filters.numberFormat(user.value?.balanceCoin ?? 0);
 });
@@ -141,9 +137,8 @@ const getFormattedCurrencyImage = (image: string) => {
     return app.config.globalProperties.$filters.serverLinkFormat(image);
 };
 
-// Helper methods
 const swapRequest = () => {
-    if (!user.value || !swapCount.value) {
+    if (!user.value || !swapCount.value || !swapWallet.value) {
         createNotification({
             title: "Input Error",
             description: "Please fill all the fields correctly",
@@ -176,11 +171,30 @@ const swapRequest = () => {
         });
         return;
     }
+
     createNotification({
-        title: "Comming Soon",
-        description: "This section will be completed soon",
-        type: NotificationTypeEnum.Information,
+        title: "Processing Swap",
+        description: "Your swap request is being processed...",
+        type: NotificationTypeEnum.Waiting,
     });
+
+    // Call the swap service (placeholder)
+    currencyService.swap(swapCount.value, swapWallet.value, currentCurrency.value!.id)
+        .then(result => {
+            user.value = result;
+            createNotification({
+                title: "Swap Successful",
+                description: "Coins have been successfully swapped",
+                type: NotificationTypeEnum.Success,
+            });
+        })
+        .catch(except => {
+            createNotification({
+                title: "Swap Error",
+                description: "An error occurred during the swap process",
+                type: NotificationTypeEnum.Exception,
+            });
+        });
 };
 
 const checkIsNumber = (event: KeyboardEvent) => {
@@ -188,9 +202,8 @@ const checkIsNumber = (event: KeyboardEvent) => {
     const keyPressed: string = event.key;
 
     if (!keysAllowed.includes(keyPressed)) {
-        event.preventDefault()
+        event.preventDefault();
     }
-    getSwapAmount();
 };
 
 const getSwapAmount = () => {
@@ -206,64 +219,7 @@ const selectCurrency = (currency: CurrencyModel) => {
 const transferSubmit = () => {
     if (!user.value) return;
 
-    if (!transferCount.value || transferCount.value == 0 || !transferUserId.value || transferUserId.value == 0) {
-        createNotification({
-            title: "Input Error",
-            description: "Please fill all the fields correctly",
-            type: NotificationTypeEnum.Exception,
-        });
-        return;
-    }
-    if (user.value.balanceCoin < transferCount.value) {
-        createNotification({
-            title: "Balance Error",
-            description: "Balance is not enough",
-            type: NotificationTypeEnum.Exception
-        });
-        return;
-    }
-    if (swapCount.value < 10000000) {
-        createNotification({
-            title: "Count Error",
-            description: "The minimum amount is 10,000,000 coins",
-            type: NotificationTypeEnum.Exception,
-        });
-        return;
-    }
-    if (!swapWallet.value.toLowerCase().startsWith("t")) {
-        createNotification({
-            title: "Wallet Error",
-            description: "Wallet Address is not valid (Trc20)",
-            type: NotificationTypeEnum.Exception,
-        });
-        return;
-    }
-    createNotification({
-        title: "Comming Soon",
-        description: "This section will be completed soon",
-        type: NotificationTypeEnum.Information,
-    });
-};
-const checkIsNumber = (event: KeyboardEvent) => {
-    const keysAllowed: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'];
-    const keyPressed: string = event.key;
-
-    if (!keysAllowed.includes(keyPressed)) {
-        event.preventDefault()
-    }
-    getSwapAmount();
-};
-const getSwapAmount = () => {
-    if (!currentCurrency.value || !swapCount.value) return "0";
-
-    return (swapCount.value / 200000) * currentCurrency.value.price;
-
-
-}
-const transferSubmit = () => {
-    if (!user.value) return;
-
-    if (!transferCount.value || transferCount.value == 0 || !transferUserId.value || transferUserId.value == 0) {
+    if (!transferCount.value || !transferUserId.value) {
         createNotification({
             title: "Input Error",
             description: "Please fill all the fields correctly",
@@ -282,22 +238,24 @@ const transferSubmit = () => {
     if (transferCount.value < 10000) {
         createNotification({
             title: "Count Error",
-            description: "The minimum amount is 1000 coins",
+            description: "The minimum amount is 10,000 coins",
             type: NotificationTypeEnum.Exception,
         });
         return;
     }
+
     createNotification({
-        title: "please wait",
-        description: "The request is in progress ...",
+        title: "Processing Transfer",
+        description: "Your transfer request is being processed...",
         type: NotificationTypeEnum.Waiting,
     });
+
     userService.transfer(transferCount.value, transferUserId.value)
         .then(result => {
             user.value = result;
             createNotification({
-                title: "Transfer Successlly",
-                description: "Coins have been successfully sent to the user",
+                title: "Transfer Successful",
+                description: "Coins have been successfully transferred",
                 type: NotificationTypeEnum.Success,
             });
         })
@@ -308,24 +266,24 @@ const transferSubmit = () => {
                     description: "Balance is not enough",
                     type: NotificationTypeEnum.Exception,
                 });
-                return;
-            }
-            else if (except.responseStatus == 404) {
+            } else if (except.responseStatus == 404) {
                 createNotification({
-                    title: "User Id Invalid",
-                    description: "Can not found user with this id",
+                    title: "User ID Invalid",
+                    description: "User ID not found",
                     type: NotificationTypeEnum.Exception,
                 });
-                return;
+            } else {
+                createNotification({
+                    title: "Transfer Error",
+                    description: "Unable to process the transfer",
+                    type: NotificationTypeEnum.Exception,
+                });
             }
-            createNotification({
-                title: "Transfer Error",
-                description: "Can not Transfer now",
-                type: NotificationTypeEnum.Exception,
-            });
-        })
+        });
 };
+
 fetchRequest();
+
 </script>
 
 <style scoped>
