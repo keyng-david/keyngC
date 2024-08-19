@@ -1,17 +1,14 @@
 <template>
   <div class="container py-4 h-screen d-flex flex-column">
-
     <RouterView />
-
     <Notification v-if="notification" :notification="notification" />
   </div>
 </template>
 
 <script setup lang="ts">
-
 import type NotificationModel from '@/models/notificationModel';
 import Notification from '@/components/notification/Notificaton.vue';
-import { RouterView, RouterLink, useRouter, useRoute } from "vue-router";
+import { RouterView, useRouter } from "vue-router";
 
 import { ref, provide } from 'vue';
 import { NotificationTypeEnum } from '@/models/notificationModel';
@@ -35,13 +32,12 @@ function createNotification(model: NotificationModel) {
 provide("notification", { createNotification });
 
 const router = useRouter();
-const route = useRoute();
 
 const goBackUsingBack = () => {
   if (router) router.back();
 }
 
-window.Telegram.WebApp.BackButton.isVisible = true;
-window.Telegram.WebApp.BackButton.onClick(goBackUsingBack);
-
+// Ensuring TypeScript recognizes `BackButton`
+(window.Telegram.WebApp.BackButton as any).isVisible = true;
+(window.Telegram.WebApp.BackButton as any).onClick(goBackUsingBack);
 </script>
