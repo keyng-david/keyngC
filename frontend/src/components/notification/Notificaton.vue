@@ -4,19 +4,19 @@
       class="notification_card w-full rounded-1 box-shadow p-2">
       <div class="d-flex align-items-center">
         <div class="flex-center mr-2" v-if="notification.type == NotificationTypeEnum.Success">
-          <img width="50px" src="@/assets/images/icons/success.png" alt="">
+          <img width="50px" src="@/assets/images/icons/success.png" alt="Success">
         </div>
         <div class="flex-center mr-2" v-else-if="notification.type == NotificationTypeEnum.Waiting">
-          <img width="50px" src="@/assets/images/icons/hourglass.png" alt="">
+          <img width="50px" src="@/assets/images/icons/hourglass.png" alt="Waiting">
         </div>
         <div class="flex-center mr-2" v-else-if="notification.type == NotificationTypeEnum.Warning">
-          <img width="50px" src="@/assets/images/icons/warning.png" alt="">
+          <img width="50px" src="@/assets/images/icons/warning.png" alt="Warning">
         </div>
         <div class="flex-center mr-2" v-else-if="notification.type == NotificationTypeEnum.Information">
-          <img width="50px" src="@/assets/images/icons/information.png" alt="">
+          <img width="50px" src="@/assets/images/icons/information.png" alt="Information">
         </div>
         <div class="flex-center mr-2" v-else-if="notification.type == NotificationTypeEnum.Exception">
-          <img width="50px" src="@/assets/images/icons/exception.png" alt="">
+          <img width="50px" src="@/assets/images/icons/exception.png" alt="Exception">
         </div>
         <div class="d-flex flex-column">
           <span class="text-color fs-small fw-bold">{{ notification.title }}</span>
@@ -33,7 +33,7 @@ import type NotificationModel from '@/models/notificationModel';
 import { NotificationTypeEnum } from '@/models/notificationModel';
 
 interface Props {
-  notification: NotificationModel,
+  notification: NotificationModel;
 }
 
 const props = defineProps<Props>();
@@ -43,7 +43,6 @@ const notifyTelegram = (message: string) => {
   telegram.showAlert(message);
 };
 
-import and the type of newVal
 watch(() => props.notification, (newVal: NotificationModel | null) => { 
   if (newVal) {
     notifyTelegram(newVal.description);

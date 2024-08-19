@@ -1,11 +1,12 @@
 import { HttpService } from "./common/httpService";
 import { BASE_URL } from "@/configurations/HttpConfiguration";
 import type CurrencyModel from "@/models/currencyModel";
+import type UserModel from "@/models/userModel"; // Assuming UserModel is imported from this path
 
 export default class CurrencyService extends HttpService {
     constructor() {
         super(BASE_URL + "/currency");
-    };
+    }
 
     public async getList(): Promise<Array<CurrencyModel>> {
         const response = await this.get(`/list`);
@@ -16,21 +17,19 @@ export default class CurrencyService extends HttpService {
         throw response.error;
     }
 
-}
-
     public async swap(amount: number, wallet: string, currencyId: string): Promise<UserModel> {
-    const response = await this.post(`/swap`, {
-      amount,
-      wallet,
-      currencyId
-    });
+        const response = await this.post(`/swap`, {
+            amount,
+            wallet,
+            currencyId
+        });
 
-    if (response.isOk()) {
-      const userModel: UserModel = (response.value as any).result;
-      localStorage.setItem('user', JSON.stringify(userModel));
-      return userModel;
+        if (response.isOk()) {
+            const userModel: UserModel = (response.value as any).result;
+            localStorage.setItem('user', JSON.stringify(userModel));
+            return userModel;
+        }
+
+        throw response.error;
     }
-
-    throw response.error;
-  }
 }
