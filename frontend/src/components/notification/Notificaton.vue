@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import type NotificationModel from '@/models/notificationModel';
 import { NotificationTypeEnum } from '@/models/notificationModel';
 
@@ -43,7 +43,8 @@ const notifyTelegram = (message: string) => {
   telegram.showAlert(message);
 };
 
-watch(() => props.notification, (newVal) => {
+import and the type of newVal
+watch(() => props.notification, (newVal: NotificationModel | null) => { 
   if (newVal) {
     notifyTelegram(newVal.description);
   }
