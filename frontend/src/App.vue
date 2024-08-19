@@ -13,20 +13,23 @@ import type NotificationModel from '@/models/notificationModel';
 import Notification from '@/components/notification/Notificaton.vue';
 import { RouterView, RouterLink, useRouter, useRoute } from "vue-router";
 
-import { ref, provide, } from 'vue';
+import { ref, provide } from 'vue';
 import { NotificationTypeEnum } from '@/models/notificationModel';
 
-const notification = ref<NotificationModel>();
+const notification = ref<NotificationModel | null>(null);
 
 function createNotification(model: NotificationModel) {
   if (!model.type) model.type = NotificationTypeEnum.Success;
 
   notification.value = model;
 
-  if (model.type != NotificationTypeEnum.Waiting)
+  if (model.type !== NotificationTypeEnum.Waiting) {
     setTimeout(() => {
-      notification.value = undefined;
+      if (notification.value === model) {
+        notification.value = null;
+      }
     }, 3000);
+  }
 }
 
 provide("notification", { createNotification });
@@ -38,7 +41,7 @@ const goBackUsingBack = () => {
   if (router) router.back();
 }
 
-window.Telegram.WebApp.BackButton.isVisible =  true;
-window.Telegram.WebApp.BackButton.onClick(goBackUsingBack)
+window.Telegram.WebApp.BackButton.isVisible = true;
+window.Telegram.WebApp.BackButton.onClick(goBackUsingBack);
 
 </script>
