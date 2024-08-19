@@ -16,4 +16,5 @@ app.config.globalProperties.$filters = {
     serverLinkFormat: (link: string = "") => `${BASE_URL}${link}`
 };
 
+// Mounting the app
 app.mount('#app');
