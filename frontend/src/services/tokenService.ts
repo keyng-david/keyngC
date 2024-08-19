@@ -5,13 +5,22 @@ import type LevelModel from "@/models/levelModel";
 import type TokenModel from "@/models/tokenModel";
 import type UserModel from "@/models/userModel";
 
+interface SignInResponse {
+    result: {
+        token: TokenModel;
+        leagues: Array<LeagueModel>;
+        levels: Array<LevelModel>;
+        user: UserModel;
+    };
+}
+
 export default class TokenService extends HttpService {
     constructor() {
         super(BASE_URL + "/token");
-    };
+    }
 
     public async signIn(webAppData: string): Promise<TokenModel> {
-        const response = await this.post('/signin', { webAppData });
+        const response = await this.post<SignInResponse>('/signin', { webAppData });
 
         if (response.isOk()) {
             const tokenModel: TokenModel = response.value.result.token;
@@ -34,6 +43,4 @@ export default class TokenService extends HttpService {
         }
         throw response.error;
     }
-
-
 }
