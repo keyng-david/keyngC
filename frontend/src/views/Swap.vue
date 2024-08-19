@@ -10,9 +10,8 @@
             <div class="d-flex flex-column">
                 <span class="fs-small text-color fw-bold">Transfer</span>
                 <span class="fs-secondary-small description-color fw-normal mt-1">Your Balance Is <b>{{
-                    $filters.numberFormat(user?.balanceCoin ?? 0) }}</b></span>
+                    formattedBalance }}</b></span>
             </div>
-
 
             <div class="d-flex flex-column mt-1">
                 <div class="d-flex flex-column mt-2 profile_transfer_input bg-card box-shadow rounded-1 p-2">
@@ -36,30 +35,28 @@
             <div class="d-flex flex-column">
                 <span class="fs-small text-color fw-bold">Swap Coin</span>
                 <span class="fs-secondary-small description-color fw-normal mt-1">Your Balance Is <b>{{
-                    $filters.numberFormat(user?.balanceCoin ?? 0) }}</b></span>
+                    formattedBalance }}</b></span>
             </div>
             <div class="d-flex flex-column mt-3">
                 <div class="d-flex flex-column profile_transfer_input bg-card box-shadow rounded-1 p-2">
                     <span class="fs-secondary-small description-color fw-bold">Select Currency</span>
 
                     <ul class="mt-1">
-
                         <li v-if="showCurrencyList">
                             <ul class="currency_list">
                                 <li v-for="(currency, index) in currencies" :key="index"
                                     class="d-flex align-items-center py-2"
-                                    @click="currentCurrency = currency; showCurrencyList = false">
-                                    <img width="25px" :src="$filters.serverLinkFormat(currency.image)" alt="">
+                                    @click="selectCurrency(currency)">
+                                    <img width="25px" :src="getFormattedCurrencyImage(currency.image)" alt="">
                                     <span class="ml-1 fs-small fw-bold text-color">{{ currency.name }}</span>
                                 </li>
                             </ul>
                         </li>
                         <li v-else-if="currentCurrency" @click="showCurrencyList = true"
                             class="d-flex align-items-center py-2">
-                            <img width="25px" :src="$filters.serverLinkFormat(currentCurrency.image)" alt="">
+                            <img width="25px" :src="getFormattedCurrencyImage(currentCurrency.image)" alt="">
                             <span class="ml-1 fs-small fw-bold text-color">{{ currentCurrency.name }}</span>
                         </li>
-
                     </ul>
                 </div>
                 <div class="d-flex flex-column mt-2 profile_transfer_input bg-card box-shadow rounded-1 p-2">
@@ -74,7 +71,7 @@
                         placeholder="Count Coin For Swap" type="number" class="fs-small text-color fw-bold mt-1">
                 </div>
                 <span v-if="currentCurrency" class="description-color fs-small fw-bold mt-3">
-                    To Doller = ${{ $filters.numberFormat(getSwapAmount()) }}
+                    To Dollar = ${{ formattedSwapAmount }}
                 </span>
                 <button @click="swapRequest" class="bg-theme text-color mt-3 fs-medium p-2 fw-bold rounded-1">
                     swap
@@ -83,7 +80,7 @@
                 <div class="description mt-2">
                     <p class="description-color fs-secondary-small fw-normal">
                         The operation of converting coins to other currencies is irreversible. Please fill in the values
-                        ​​carefully. Before doing this, read our terms and conditions because we have no responsibility
+                        carefully. Before doing this, read our terms and conditions because we have no responsibility
                         for not reading them.
                     </p>
                 </div>
@@ -93,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject } from 'vue'
+import { ref, inject, computed } from 'vue'
 
 import UserService from '@/services/userService';
 import type UserModel from '@/models/userModel';
@@ -102,6 +99,7 @@ import { NotificationTypeEnum } from '@/models/notificationModel';
 import type CurrencyModel from '@/models/currencyModel';
 import CurrencyService from '@/services/currencyService';
 
+// Inject notification service
 const { createNotification } = inject("notification");
 
 const user = ref<UserModel>();
@@ -114,13 +112,12 @@ const transferCount = ref<number>();
 const transferUserId = ref<number>();
 const currencies = ref<Array<CurrencyModel>>(new Array<CurrencyModel>());
 
+// Instantiate services
 const userService = new UserService();
 const currencyService = new CurrencyService();
 
-
+// Fetch user and currency data on component mount
 const fetchRequest = () => {
-    const userService = new UserService();
-
     userService.profile()
         .then(result => user.value = result)
     currencyService.getList()
@@ -130,9 +127,23 @@ const fetchRequest = () => {
                 currentCurrency.value = result[0];
         })
 };
+
+// Computed properties for filters
+const formattedBalance = computed(() => {
+    return app.config.globalProperties.$filters.numberFormat(user.value?.balanceCoin ?? 0);
+});
+
+const formattedSwapAmount = computed(() => {
+    return app.config.globalProperties.$filters.numberFormat(getSwapAmount());
+});
+
+const getFormattedCurrencyImage = (image: string) => {
+    return app.config.globalProperties.$filters.serverLinkFormat(image);
+};
+
+// Helper methods
 const swapRequest = () => {
     if (!user.value || !swapCount.value) {
-
         createNotification({
             title: "Input Error",
             description: "Please fill all the fields correctly",
@@ -146,6 +157,68 @@ const swapRequest = () => {
             title: "Balance Error",
             description: "Balance is not enough",
             type: NotificationTypeEnum.Exception,
+        });
+        return;
+    }
+    if (swapCount.value < 10000000) {
+        createNotification({
+            title: "Count Error",
+            description: "The minimum amount is 10,000,000 coins",
+            type: NotificationTypeEnum.Exception,
+        });
+        return;
+    }
+    if (!swapWallet.value.toLowerCase().startsWith("t")) {
+        createNotification({
+            title: "Wallet Error",
+            description: "Wallet Address is not valid (Trc20)",
+            type: NotificationTypeEnum.Exception,
+        });
+        return;
+    }
+    createNotification({
+        title: "Comming Soon",
+        description: "This section will be completed soon",
+        type: NotificationTypeEnum.Information,
+    });
+};
+
+const checkIsNumber = (event: KeyboardEvent) => {
+    const keysAllowed: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'];
+    const keyPressed: string = event.key;
+
+    if (!keysAllowed.includes(keyPressed)) {
+        event.preventDefault()
+    }
+    getSwapAmount();
+};
+
+const getSwapAmount = () => {
+    if (!currentCurrency.value || !swapCount.value) return "0";
+    return (swapCount.value / 200000) * currentCurrency.value.price;
+};
+
+const selectCurrency = (currency: CurrencyModel) => {
+    currentCurrency.value = currency;
+    showCurrencyList.value = false;
+};
+
+const transferSubmit = () => {
+    if (!user.value) return;
+
+    if (!transferCount.value || transferCount.value == 0 || !transferUserId.value || transferUserId.value == 0) {
+        createNotification({
+            title: "Input Error",
+            description: "Please fill all the fields correctly",
+            type: NotificationTypeEnum.Exception,
+        });
+        return;
+    }
+    if (user.value.balanceCoin < transferCount.value) {
+        createNotification({
+            title: "Balance Error",
+            description: "Balance is not enough",
+            type: NotificationTypeEnum.Exception
         });
         return;
     }
