@@ -1,12 +1,11 @@
-// src/filters/index.js
-export function numberFormat(value) {
-    return new Intl.NumberFormat().format(value);
+export function serverLinkFormat(link: string): string {
+  return `https://your-server.com/${link}`;
 }
 
-export function serverLinkFormat(link) {
-    return `${process.env.VUE_APP_SERVER_URL}/${link}`;
+export function truncate(text: string, length: number): string {
+  return text.length > length ? text.substring(0, length) + '...' : text;
 }
 
-export function truncate(text, length) {
-    return text.length > length ? text.substring(0, length - 3) + '...' : text;
+export function numberFormat(number: number): string {
+  return new Intl.NumberFormat().format(number);
 }
