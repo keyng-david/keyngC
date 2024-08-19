@@ -98,6 +98,9 @@ import type UserModel from '@/models/userModel';
 import { NotificationTypeEnum } from '@/models/notificationModel';
 import type CurrencyModel from '@/models/currencyModel';
 import CurrencyService from '@/services/currencyService';
+import { getCurrentInstance } from 'vue';
+
+const { proxy: app } = getCurrentInstance()!;
 
 const { createNotification } = inject("notification");
 
