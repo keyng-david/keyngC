@@ -103,7 +103,7 @@ import GameService from '@/services/gameService';
 
 import ProgressLine from '@/components/utilities/ProgressLine.vue';
 
-import { ref, onMounted, inject } from 'vue'
+import { ref, onMounted, inject } from 'vue';
 import { NotificationTypeEnum } from '@/models/notificationModel';
 
 const { createNotification } = inject("notification");
@@ -112,48 +112,50 @@ const user = ref<UserModel>();
 const squad = ref<SquadModel>();
 
 const miningCount = ref<number>(0);
-const lastClickDate = ref<Date | null>();
+const lastClickDate = ref<Date | null>(null);
 
-const scores = ref<Array<object>>([]);
+interface Score {
+    x: number;
+    y: number;
+    score: number;
+}
+
+const scores = ref<Array<Score>>([]);
 
 const gameService = new GameService();
 const userService = new UserService();
 
-
 onMounted(() => {
     const id = setInterval(() => {
-        if (user.value && user.value.availableEnergy != user.value.limitEnergyLevel.value) {
+        if (user.value && user.value.availableEnergy !== user.value.limitEnergyLevel.value) {
             user.value.availableEnergy += user.value.rechargeEnergyLevel.value;
 
             if (user.value.availableEnergy > user.value.limitEnergyLevel.value) {
                 user.value.availableEnergy = user.value.limitEnergyLevel.value;
             }
-
         }
 
         if (lastClickDate.value && new Date().getTime() - lastClickDate.value.getTime() >= 2000) {
-
-            if (miningCount.value != 0)
-                new GameService().sendClick(miningCount.value)
+            if (miningCount.value !== 0) {
+                gameService.sendClick(miningCount.value)
                     .finally(() => getProfileRequest());
-
+            }
             miningCount.value = 0;
             lastClickDate.value = null;
-
         }
     }, 1000);
-    return () => clearInterval(id);
 
+    return () => clearInterval(id);
 });
 
 const getProfileRequest = () => {
-
     userService.profile()
         .then(result => {
             user.value = result;
             squad.value = result.squad;
-        })
+        });
 };
+
 const getCheckRobotRequest = () => {
     setTimeout(() => {
         if (user.value && user.value.roBotLevel) {
@@ -172,28 +174,23 @@ const getCheckRobotRequest = () => {
                     });
                 });
         }
-
     }, 3000);
-
 };
 
-const clickRequest = (e: any) => {
+const clickRequest = (e: MouseEvent) => {
     if (!user.value) return;
 
-    if (user.value.availableEnergy < user.value.multipleClickLevel.value)
-        return;
+    if (user.value.availableEnergy < user.value.multipleClickLevel.value) return;
 
     const x = e.offsetX;
     const y = e.offsetY;
 
-    const score = { x, y, score: getCountCoinForAnyClick() };
-
+    const score: Score = { x, y, score: getCountCoinForAnyClick() };
     scores.value.push(score);
 
     setTimeout(() => {
-        let index = scores.value.indexOf(score);
-        if (index > -1)
-            scores.value.splice(index, 1);
+        const index = scores.value.indexOf(score);
+        if (index > -1) scores.value.splice(index, 1);
     }, 1000);
 
     const countCoin = getCountCoinForAnyClick();
@@ -204,19 +201,17 @@ const clickRequest = (e: any) => {
     if (squad.value) {
         squad.value.balanceCoin += countCoin;
     }
+
     miningCount.value += countCoin;
-
     lastClickDate.value = new Date();
-
 };
 
-const getCountCoinForAnyClick = () => {
+const getCountCoinForAnyClick = (): number => {
     return user.value?.multipleClickLevel.value ?? 1;
 };
 
 getProfileRequest();
 getCheckRobotRequest();
-
 
 </script>
 
