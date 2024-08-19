@@ -116,7 +116,7 @@ const confirmUpgrade = () => {
 
     if (!isSelected || !getLevel || !props.user) return;
 
-    if (getLevel.availableCoin > props.user.balanceCoin) {
+    if (Number(getLevel.availableCoin) > Number(props.user.balanceCoin)) {
         createNotification({
             title: "Balance Error",
             description: "Balance is not enough",
