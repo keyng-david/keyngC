@@ -114,7 +114,7 @@ const getCurrenctLevel = () => {
 const confirmUpgrade = () => {
     const getLevel = getUpgradeLevel();
 
-    if (!isSelected || !getLevel || !props.user) return;
+    if (!isSelected.value || !getLevel || !props.user) return;
 
     if (Number(getLevel.availableCoin) > Number(props.user.balanceCoin)) {
         createNotification({
@@ -129,7 +129,7 @@ const confirmUpgrade = () => {
         description: "The request is in progress ...",
         type: NotificationTypeEnum.Waiting,
     });
-    
+
     levelService.levelUp(props.type)
         .then(result => {
             createNotification({
@@ -140,7 +140,7 @@ const confirmUpgrade = () => {
             emit("upgrade");
         })
         .catch(except => {
-            if (except.responseStatus = 400) {
+            if (except.responseStatus === 400) {
                 createNotification({
                     title: "Balance Error",
                     description: "Balance is not enough",
