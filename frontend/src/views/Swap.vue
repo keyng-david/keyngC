@@ -90,23 +90,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject, computed } from 'vue';
-
+import { ref, inject, computed, getCurrentInstance } from 'vue';
 import UserService from '@/services/userService';
 import type UserModel from '@/models/userModel';
-
 import { NotificationTypeEnum } from '@/models/notificationModel';
 import type CurrencyModel from '@/models/currencyModel';
 import CurrencyService from '@/services/currencyService';
-import { getCurrentInstance } from 'vue';
 
-const { proxy: app } = getCurrentInstance()!;
+const { proxy } = getCurrentInstance();
+const app = proxy!;  // Ensure that app is non-null
 
-const { createNotification } = inject("notification");
+const createNotification = inject<Function>("createNotification");  // Properly typed inject
+if (!createNotification) {
+    throw new Error("createNotification injection is missing.");
+}
 
 const user = ref<UserModel>();
 const currentCurrency = ref<CurrencyModel | null>(null);
-
 const showCurrencyList = ref<boolean>(false);
 const swapCount = ref<number>();
 const swapWallet = ref<string>("");
@@ -118,26 +118,24 @@ const userService = new UserService();
 const currencyService = new CurrencyService();
 
 const fetchRequest = () => {
-    userService.profile()
-        .then(result => user.value = result);
-    currencyService.getList()
-        .then(result => {
-            currencies.value = result;
-            if (result.length > 0)
-                currentCurrency.value = result[0];
-        });
+    userService.profile().then(result => user.value = result);
+    currencyService.getList().then(result => {
+        currencies.value = result;
+        if (result.length > 0)
+            currentCurrency.value = result[0];
+    });
 };
 
 const formattedBalance = computed(() => {
-    return app.config.globalProperties.$filters.numberFormat(user.value?.balanceCoin ?? 0);
+    return app?.$filters.numberFormat(user.value?.balanceCoin ?? 0);
 });
 
 const formattedSwapAmount = computed(() => {
-    return app.config.globalProperties.$filters.numberFormat(getSwapAmount());
+    return app?.$filters.numberFormat(getSwapAmount());
 });
 
 const getFormattedCurrencyImage = (image: string) => {
-    return app.config.globalProperties.$filters.serverLinkFormat(image);
+    return app?.$filters.serverLinkFormat(image);
 };
 
 const swapRequest = () => {
@@ -159,7 +157,6 @@ const swapRequest = () => {
         return;
     }
 
-    // Ensure swapWallet is a string and swapCount is a number
     if (swapCount.value < 10000000) {
         createNotification({
             title: "Count Error",
@@ -183,7 +180,6 @@ const swapRequest = () => {
         type: NotificationTypeEnum.Waiting,
     });
 
-    // Call the swap service (Ensure currentCurrency and swapWallet are correctly typed)
     currencyService.swap(swapCount.value, swapWallet.value, currentCurrency.value!.id)
         .then(result => {
             user.value = result;
@@ -288,7 +284,6 @@ const transferSubmit = () => {
 };
 
 fetchRequest();
-
 </script>
 
 <style scoped>
