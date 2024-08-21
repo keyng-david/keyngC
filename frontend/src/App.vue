@@ -8,36 +8,50 @@
 <script setup lang="ts">
 import type NotificationModel from '@/models/notificationModel';
 import Notification from '@/components/notification/Notificaton.vue';
-import { RouterView, useRouter } from "vue-router";
+import { RouterView, RouterLink, useRouter, useRoute } from "vue-router";
 
 import { ref, provide } from 'vue';
 import { NotificationTypeEnum } from '@/models/notificationModel';
 
-const notification = ref<NotificationModel | null>(null);
+// Extend the global interface to include the BackButton property
+declare global {
+  interface TelegramWebApp {
+    BackButton: {
+      isVisible: boolean;
+      onClick: (callback: () => void) => void;
+    };
+  }
+
+  interface Window {
+    Telegram: {
+      WebApp: TelegramWebApp;
+    };
+  }
+}
+
+const notification = ref<NotificationModel>();
 
 function createNotification(model: NotificationModel) {
   if (!model.type) model.type = NotificationTypeEnum.Success;
 
   notification.value = model;
 
-  if (model.type !== NotificationTypeEnum.Waiting) {
+  if (model.type != NotificationTypeEnum.Waiting)
     setTimeout(() => {
-      if (notification.value === model) {
-        notification.value = null;
-      }
+      notification.value = undefined;
     }, 3000);
-  }
 }
 
 provide("notification", { createNotification });
 
 const router = useRouter();
+const route = useRoute();
 
 const goBackUsingBack = () => {
   if (router) router.back();
 }
 
-// Ensuring TypeScript recognizes `BackButton`
-(window.Telegram.WebApp.BackButton as any).isVisible = true;
-(window.Telegram.WebApp.BackButton as any).onClick(goBackUsingBack);
+// Using the extended property BackButton
+window.Telegram.WebApp.BackButton.isVisible = true;
+window.Telegram.WebApp.BackButton.onClick(goBackUsingBack);
 </script>
