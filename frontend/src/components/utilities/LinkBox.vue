@@ -19,24 +19,24 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+
 interface Props {
-    link: string
+    link: string;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 const link = ref<string>(props.link);
 
 const copyLink = () => {
-    const input_link = document.querySelector('.input_link')
+    const input_link = document.querySelector('.input_link') as HTMLInputElement | null;
 
     if (!input_link) return;
 
-    input_link.select()
+    input_link.select();
 };
 
-const preventWrite = (e: any) => link.value = props.link;
-
+const preventWrite = (e: Event) => link.value = props.link;
 </script>
 
 <style scoped>
