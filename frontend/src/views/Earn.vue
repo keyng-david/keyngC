@@ -17,33 +17,61 @@
             <span class="text-color fs-small fw-bold mb-2">Invite Friends Bonus</span>
             <div class="d-flex align-items-center">
               <span class="description-color fs-small fw-normal">
-                Invite friends to get <b class="theme-color">{{ $filters.numberFormat(2500) }}</b> coins.
+                Invite friends to get <b class="theme-color">{{ numberFormat(2500) }}</b> coins
               </span>
             </div>
           </div>
         </div>
-        <div class="arrow_icon flex-center bg-card rounded-1 box-shadow p-2">
-          <img class="w-full h-full" src="@/assets/images/icons/arrow_right.png" alt="">
+      </div>
+    </div>
+  </section>
+  
+  <section class="section_challenges mt-5">
+    <span class="fs-medium fw-bold text-color">Challenges</span>
+    <div class="d-flex flex-column">
+      <div v-for="(challenge, index) in challenges" :key="index" class="mt-3 bg-card box-shadow p-2 rounded-1">
+        <div @click="challenge.isCompleted ? () => { } : $router.push({ name: 'challenge_detail', params: { id: challenge.id } })"
+             :class="challenge.isCompleted ? 'completed' : ''"
+             class="d-flex align-items-center justify-content-between">
+          <div class="flex-center">
+            <div class="card_icon flex-center bg-card mr-2 rounded-1 p-2 box-shadow">
+              <img class="w-full h-full" :src="serverLinkFormat(challenge.image)" alt="">
+            </div>
+            <div class="d-flex flex-column">
+              <span class="text-color fs-small fw-bold mb-2">{{ challenge.name }}</span>
+              <div class="d-flex align-items-center mr-3">
+                <img v-if="!challenge.isCompleted" class="mr-1" width="15px" src="@/assets/images/icons/coin.svg" alt="">
+                <span class="description-color fs-small fw-bold">
+                  {{ challenge.isCompleted ? 'completed' : numberFormat(challenge.bonus) }}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 </template>
 
-<script setup lang="ts">
-import { useRouter } from 'vue-router';
+<script lang="ts" setup>
+import { ref, inject } from 'vue';
+import type ChallengeModel from '@/models/challengeModel';
+import ChallengeService from '@/services/challengesService';
 
-const $filters = inject('$filters');
+// Injecting the filters from the global context
+const numberFormat = inject<Function>('numberFormat');
+const serverLinkFormat = inject<Function>('serverLinkFormat');
 
-if (!$filters) {
-  throw new Error('The $filters injection was not found.');
+if (!numberFormat || !serverLinkFormat) {
+  throw new Error('Filters not found in the global context.');
 }
 
-const router = useRouter();
+const challenges = ref<Array<ChallengeModel>>(new Array<ChallengeModel>());
 
-const navigateToProfile = () => {
-  router.push({ name: 'profile' });
-};
+const challengeService = new ChallengeService();
+
+challengeService.getList().then(result => challenges.value = result);
+
 </script>
 
 <style scoped>
