@@ -68,7 +68,7 @@ const userService = new UserService();
 const skinService = new SkinService();
 const levelService = new LevelService();
 
-const { createNotification } = inject("notification");
+const createNotification = inject('notification') as (options: { title: string; description: string; type: NotificationTypeEnum }) => void;
 
 const fetchRequest = () => {
     levelService.getLevels().then(result => {
@@ -82,13 +82,14 @@ const fetchRequest = () => {
         skins.value = result;
     });
 };
+
 const selectSkin = (skin: SkinModel) => {
     if (!user.value || !skin) return;
     if (user.value.skinId == skin.id) return;
 
     if (skin.isBought) {
         createNotification({
-            title: "please wait",
+            title: "Please wait",
             description: "The request is in progress ...",
             type: NotificationTypeEnum.Waiting,
         });
@@ -97,18 +98,19 @@ const selectSkin = (skin: SkinModel) => {
                 user.value = result;
                 createNotification({
                     title: "Skin Changed",
-                    description: "TSkin changed successfully",
+                    description: "Skin changed successfully",
                     type: NotificationTypeEnum.Success,
                 });
             }).catch(except => createNotification({
                 title: "Not Changed",
-                description: "Can not change skin",
+                description: "Cannot change skin",
                 type: NotificationTypeEnum.Exception,
             }));
     } else {
         selected.value = skin;
     }
 };
+
 const confirmButton = () => {
     if (!selected.value || !user.value) return;
     if (selected.value.isBought) return;
@@ -127,9 +129,8 @@ const confirmButton = () => {
     }
     selected.value = null;
 
-
     createNotification({
-        title: "please wait",
+        title: "Please wait",
         description: "The request is in progress ...",
         type: NotificationTypeEnum.Waiting,
     });
@@ -147,7 +148,7 @@ const confirmButton = () => {
             }
         })
         .catch(except => {
-            if (except.responseStatus = 400) {
+            if (except.responseStatus === 400) {
                 createNotification({
                     title: "Balance Error",
                     description: "Balance is not enough",
@@ -157,18 +158,21 @@ const confirmButton = () => {
             }
             createNotification({
                 title: "Skin Error",
-                description: "Can not buy skin",
+                description: "Cannot buy skin",
                 type: NotificationTypeEnum.Exception,
             });
         })
 };
+
 const cancellButton = () => {
     selected.value = null;
 };
+
 const upgradedLevel = () => {
-    userService.profile().then(result => user.value = result)
+    userService.profile().then(result => user.value = result);
 };
-fetchRequest()
+
+fetchRequest();
 </script>
 
 <style scoped>
