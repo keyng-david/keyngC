@@ -31,23 +31,26 @@
         </div>
     </div>
 </template>
-<script setup lang="ts">
-import { ref } from 'vue';
 
+<script lang="ts">
+import { defineComponent } from 'vue';
 import SkeletonLoader from '@/components/utilities/SkeletonLoader.vue';
 
-
-import type SkinModel from '@/models/skinModel';
-import type UserModel from '@/models/userModel';
-
-interface Props {
-    skin: SkinModel | null,
-    user: UserModel | null,
-}
-
-const props = defineProps<Props>()
-
-
+export default defineComponent({
+    components: {
+        SkeletonLoader,
+    },
+    props: {
+        user: {
+            type: Object as () => UserModel | null,
+            required: false,
+        },
+        skin: {
+            type: Object as () => SkinModel | null,
+            required: false,
+        },
+    },
+});
 </script>
 
 <style scoped>
