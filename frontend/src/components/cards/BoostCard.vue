@@ -64,13 +64,16 @@ import { NotificationTypeEnum } from '@/models/notificationModel';
 import LevelService from '@/services/levelService';
 import SkeletonLoader from '@/components/utilities/SkeletonLoader.vue';
 
-
 import type UserModel from '@/models/userModel';
 import type LevelModel from '@/models/levelModel';
 
 const levelService = new LevelService();
 
-const { createNotification } = inject("notification");
+const createNotification = inject<(options: { title: string, description: string, type: NotificationTypeEnum }) => void>("createNotification");
+
+if (!createNotification) {
+    throw new Error("createNotification is not provided");
+}
 
 const emit = defineEmits<{
     (e: 'upgrade'): void
@@ -114,9 +117,9 @@ const getCurrenctLevel = () => {
 const confirmUpgrade = () => {
     const getLevel = getUpgradeLevel();
 
-    if (!isSelected.value || !getLevel || !props.user) return;
+    if (!isSelected || !getLevel || !props.user) return;
 
-    if (Number(getLevel.availableCoin) > Number(props.user.balanceCoin)) {
+    if (getLevel.availableCoin > props.user.balanceCoin) {
         createNotification({
             title: "Balance Error",
             description: "Balance is not enough",
@@ -140,7 +143,7 @@ const confirmUpgrade = () => {
             emit("upgrade");
         })
         .catch(except => {
-            if (except.responseStatus === 400) {
+            if (except.responseStatus = 400) {
                 createNotification({
                     title: "Balance Error",
                     description: "Balance is not enough",
@@ -156,8 +159,6 @@ const confirmUpgrade = () => {
         })
     isSelected.value = false;
 };
-
-
 </script>
 <style scoped>
 .boost_icon {
