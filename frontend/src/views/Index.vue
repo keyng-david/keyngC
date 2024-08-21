@@ -1,89 +1,82 @@
-<template>
-    <section class="section_squad">
-        <div class="box-shadow bg-card p-3 rounded-1">
-            <div v-if="squad" @click="$router.push({ name: 'squad_detail', params: { id: squad.id } })"
-                class="d-flex align-items-center justify-content-between">
-                <div class="flex-center">
-                    <div class="squad_profile d-flex mr-3">
-                        <img class="rounded-1 w-full h-full" :src="$filters.serverLinkFormat(squad.image)" alt="">
-                    </div>
-                    <div class="d-flex flex-column">
-                        <span class="text-color fs-small fw-bold">{{ $filters.truncate(squad.name, 30) }}</span>
-                        <span class="description-color fs-small fw-normal mt-2">
-                            <div class="d-flex align-items-center">
-                                <div class="d-flex align-items-center mr-3">
-                                    <img class="mr-1" width="15px" src="@/assets/images/icons/coin.svg" alt="">
-                                    {{ $filters.numberFormat(squad.balanceCoin) }}
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <img class="mr-1" width="15px" :src="$filters.serverLinkFormat(squad.league.image)"
-                                        alt="">
-                                    {{ squad.league.name }}
-                                </div>
-                            </div>
-
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div v-else @click="$router.push({ name: 'squad_list' })" class="flex-center">
-                <span class="text-color fs-medium fw-normal">Join Squad</span>
-            </div>
-        </div>
-    </section>
-    <div class="section_balance mt-5">
+<<template>
+  <!-- Use the provided/injected createNotification method -->
+  <section class="section_squad">
+    <div class="box-shadow bg-card p-3 rounded-1">
+      <div v-if="squad" @click="$router.push({ name: 'squad_detail', params: { id: squad.id } })"
+          class="d-flex align-items-center justify-content-between">
         <div class="flex-center">
-            <img class="mr-2" width="35px" src="@/assets/images/icons/coin.svg" alt="">
-            <span class="text-color fs-secondary-large fw-bold">{{ $filters.numberFormat(user?.balanceCoin ?? 0)
-                }}</span>
+          <div class="squad_profile d-flex mr-3">
+            <img class="rounded-1 w-full h-full" :src="$filters.serverLinkFormat(squad.image)" alt="">
+          </div>
+          <div class="d-flex flex-column">
+            <span class="text-color fs-small fw-bold">{{ $filters.truncate(squad.name, 30) }}</span>
+            <span class="description-color fs-small fw-normal mt-2">
+              <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center mr-3">
+                  <img class="mr-1" width="15px" src="@/assets/images/icons/coin.svg" alt="">
+                  {{ $filters.numberFormat(squad.balanceCoin) }}
+                </div>
+                <div class="d-flex align-items-center">
+                  <img class="mr-1" width="15px" :src="$filters.serverLinkFormat(squad.league.image)"
+                      alt="">
+                  {{ squad.league.name }}
+                </div>
+              </div>
+            </span>
+          </div>
         </div>
-        <div class="flex-center mt-2" @click="$router.push({ name: 'leaderboard' })">
-            <img class="mr-1" width="20px" :src="$filters.serverLinkFormat(user?.league.image)" alt="">
-            <span class="description-color fs-small fw-bold">{{ user?.league.name }}</span>
-        </div>
+      </div>
+      <div v-else @click="$router.push({ name: 'squad_list' })" class="flex-center">
+        <span class="text-color fs-medium fw-normal">Join Squad</span>
+      </div>
     </div>
-    <section class="section_click mt-5">
-        <div class="flex-center">
-            <div class="section_skin_image" @click="clickRequest">
-                <img class="w-full h-full" :src="$filters.serverLinkFormat(user?.skin.image)" alt="">
-                <span v-for="(score, index) in scores" :key="index" :style="`top: ${score.y}px; left:${score.x}px;`"
-                    class="text-color fs-secondary-large fw-bold recived_score">{{ score.score }}</span>
-            </div>
+  </section>
+  <div class="section_balance mt-5">
+    <div class="flex-center">
+      <img class="mr-2" width="35px" src="@/assets/images/icons/coin.svg" alt="">
+      <span class="text-color fs-secondary-large fw-bold">{{ $filters.numberFormat(user?.balanceCoin ?? 0) }}</span>
+    </div>
+    <div class="flex-center mt-2" @click="$router.push({ name: 'leaderboard' })">
+      <img class="mr-1" width="20px" :src="$filters.serverLinkFormat(user?.league.image)" alt="">
+      <span class="description-color fs-small fw-bold">{{ user?.league.name }}</span>
+    </div>
+  </div>
+  <section class="section_click mt-5">
+    <div class="flex-center">
+      <div class="section_skin_image" @click="clickRequest">
+        <img class="w-full h-full" :src="$filters.serverLinkFormat(user?.skin.image)" alt="">
+        <span v-for="(score, index) in scores" :key="index" :style="`top: ${score.y}px; left:${score.x}px;`"
+            class="text-color fs-secondary-large fw-bold recived_score">{{ score.score }}</span>
+      </div>
+    </div>
+  </section>
+  <div class="section_footer mb-2 mt-auto">
+    <div class="d-flex flex-column w-full">
+      <div class="d-flex align-items-center mb-2">
+        <img width="30px" src="@/assets/images/icons/clock.png" alt="">
+        <span class="text-color fs-medium fw-normal ml-2"><b>{{ $filters.numberFormat(user?.availableEnergy ?? 0) }}</b> /
+            {{ $filters.numberFormat(user?.limitEnergyLevel.value ?? 0) }}</span>
+      </div>
+      <ProgressLine class="progress_energy" :value="user?.availableEnergy ?? 100"
+          :size="user?.limitEnergyLevel.value ?? 100" />
+    </div>
+    <div class="mt-4 box-shadow bg-card rounded-1 py-2">
+      <div class="d-flex align-items-center justify-content-between">
+        <div @click="$router.push({ name: 'earn' })" class="footer_item flex-center flex-column px-3">
+          <img width="35px" src="@/assets/images/icons/earn.png" alt="leaderboard">
+          <span class="text-color fs-secondary-small fw-bold mt-2">Earn</span>
         </div>
-    </section>
-    <div class="section_footer mb-2 mt-auto">
-
-        <div class="d-flex flex-column w-full">
-            <div class="d-flex align-items-center mb-2">
-                <img width="30px" src="@/assets/images/icons/clock.png" alt="">
-                <span class="text-color fs-medium fw-normal ml-2"><b>{{ $filters.numberFormat(user?.availableEnergy ??
-                    0) }}</b> /
-                    {{ $filters.numberFormat(user?.limitEnergyLevel.value ?? 0) }}</span>
-            </div>
-
-            <ProgressLine class="progress_energy" :value="user?.availableEnergy ?? 100"
-                :size="user?.limitEnergyLevel.value ?? 100" />
+        <div class="footer_spliter"></div>
+        <div @click="$router.push({ name: 'boosts' })" class="footer_item flex-center flex-column px-3">
+          <img width="35px" src="@/assets/images/icons/boost.png" alt="leaderboard">
+          <span class="text-color fs-secondary-small fw-bold mt-2">Boosts</span>
         </div>
-
-
-        <div class="mt-4 box-shadow bg-card rounded-1 py-2">
-            <div class="d-flex align-items-center justify-content-between">
-                <div @click="$router.push({ name: 'earn' })" class="footer_item flex-center flex-column px-3">
-                    <img width="35px" src="@/assets/images/icons/earn.png" alt="leaderboard">
-                    <span class="text-color fs-secondary-small fw-bold mt-2">Earn</span>
-                </div>
-                <div class="footer_spliter"></div>
-
-                <div @click="$router.push({ name: 'boosts' })" class="footer_item flex-center flex-column px-3">
-                    <img width="35px" src="@/assets/images/icons/boost.png" alt="leaderboard">
-                    <span class="text-color fs-secondary-small fw-bold mt-2">Boosts</span>
-                </div>
-                <div class="footer_spliter"></div>
-                <div @click="$router.push({ name: 'leaderboard' })" class="footer_item flex-center flex-column px-3">
-                    <img width="35px" src="@/assets/images/icons/leaderboard.png" alt="leaderboard">
-                    <span class="text-color fs-secondary-small fw-bold mt-2">Leaders</span>
-                </div>
-                <div class="footer_spliter"></div>
+        <div class="footer_spliter"></div>
+        <div @click="$router.push({ name: 'leaderboard' })" class="footer_item flex-center flex-column px-3">
+          <img width="35px" src="@/assets/images/icons/leaderboard.png" alt="leaderboard">
+          <span class="text-color fs-secondary-small fw-bold mt-2">Leaders</span>
+        </div>
+        <div class="footer_spliter"></div>
                 <div @click="$router.push({ name: 'profile' })" class="footer_item flex-center flex-column px-3">
                     <img width="35px" src="@/assets/images/icons/profile.png" alt="leaderboard">
                     <span class="text-color fs-secondary-small fw-bold mt-2">Profile</span>
