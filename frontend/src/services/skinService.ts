@@ -2,6 +2,7 @@ import { HttpService } from "./common/httpService";
 import { BASE_URL } from "@/configurations/HttpConfiguration";
 import type SkinModel from "@/models/skinModel";
 import type UserModel from "@/models/userModel";
+import type { Result, HttpException } from "@/types"; // Assuming these are defined in "@/types"
 
 export default class SkinService extends HttpService {
     constructor() {
